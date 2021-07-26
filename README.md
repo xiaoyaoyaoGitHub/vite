@@ -9,6 +9,17 @@
                     "@":resolve(__dirname, 'src')
                 }
             }
+    - 配置代理
+        vite.config.js
+            server: {
+                proxy: {
+                "/api": {
+                    target: "http://jsonplaceholder.typicode.com",
+                    changeOrigin: true,
+                    rewrite: (path) => path.replace(/^\/api/, ""),
+                },
+                },
+            }
 
 ## 插件
 ```js
