@@ -2,6 +2,13 @@
 ```js
     npm init vite@latest [project-name] --template [vue | react]
 ```
+    - 修改别名
+        vite.config.js
+            resolve:{
+                alias:{
+                    "@":resolve(__dirname, 'src')
+                }
+            }
 
 ## 插件
 ```js
