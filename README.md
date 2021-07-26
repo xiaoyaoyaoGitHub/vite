@@ -20,7 +20,16 @@
                 },
                 },
             }
+    - css模块化
+        ```js
+            import classes from "@/css.module.css"
+            <div :class="classes.logo"></div>
+        ```
+        ```js
+            <style module>.logo {}</style>
 
+            <div :class="$style.logo"></div>
+        ```
 ## 插件
 ```js
 export default {
