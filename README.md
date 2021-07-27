@@ -41,3 +41,10 @@ export default {
     }
 }
 ```
+## vite-project / myvite 手写vite
+- 过程
+    - 先以 type=module 方式在html中引入入口文件
+    - 解析如果文件中 import 引入的文件,并从node-module中查找
+    - 使用@vue/compiler-sfc 解析.vue文件,分离template 和 javascript
+    - 使用@vue/compiler-dom 将template 转换为render函数
+    - 挂载到script上, 成功
