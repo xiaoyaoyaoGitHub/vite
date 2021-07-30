@@ -24,27 +24,59 @@ app.use(async (ctx) => {
         const moduleFile = require(modulePath + '/package.json').module;
         ctx.type = "text/javascript";
         ctx.body = replaceModelPath(fs.readFileSync(modulePath + '/' + moduleFile, 'utf-8'))
+    } else if (url.endsWith('.css')) {
+        // console.log('css');
+        console.log(url);
+        const style = fs.readFileSync(path.join('../', url.replace('/', '')), 'utf-8');
+        const content = `
+            const css = "${style.replace(/\n/g, '')}";
+            let link = document.createElement('style');
+            link.setAttribute('type','text/css');
+            document.head.appendChild(link);
+            link.innerHTML = css;
+            // export default css
+        `;
+        ctx.type = 'application/javascript';
+        ctx.body = content
     } else if (url.indexOf('vue')) {
         // console.log(url);
         const fileName = path.join(__dirname, '..', url.split('?')[0]);
         const vueContent = fs.readFileSync(fileName, 'utf-8');
         const compileContent = compilerSfc.parse(vueContent);
+        // console.log(compileContent);
         if (!query.type) {
-            console.log(compileContent);
             let compilerScript = compileContent.descriptor.script.content;
             const scriptContent = compilerScript.replace('export default', 'const __script=')
             ctx.type = 'text/javascript';
             ctx.body = `
                 ${replaceModelPath(scriptContent)}
+                import '${url}?type=style'
                 import { render as __render } from '${url}?type=template'
                 __script.render = __render
                 export default __script
             `
         } else { //template
-           const compilerTemplate = compileContent.descriptor.template.content;
-           const render = compilerDom.compile(compilerTemplate, {mode:'module'}).code;
-           ctx.type = 'text/javascript';
-           ctx.body = replaceModelPath(render)
+            if (query.type === 'template') {
+                const compilerTemplate = compileContent.descriptor.template.content;
+                const render = compilerDom.compile(compilerTemplate, { mode: 'module' }).code;
+                ctx.type = 'text/javascript';
+                ctx.body = replaceModelPath(render)
+            } else { //style
+                // console.log(compileContent.descriptor.styles);
+                const currentStyle = compileContent.descriptor.styles[0].content;
+                console.log(currentStyle);
+                // // console.log(styleElement);
+                ctx.type = 'text/javascript';
+                ctx.body = `
+                    const css = "${currentStyle.replace(/\n/g, '')}";
+                    let link = document.createElement('style');
+                    link.setAttribute('type','text/css');
+                    document.head.appendChild(link);
+                    link.innerHTML = css;
+                    // export default css
+                `
+            }
+
         }
 
     }

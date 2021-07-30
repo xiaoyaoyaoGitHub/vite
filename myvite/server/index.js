@@ -29,8 +29,9 @@ app.use(async (ctx) => {
         const fileName = path.join(__dirname, '..', url.split('?')[0]);
         const vueContent = fs.readFileSync(fileName, 'utf-8');
         const compileContent = compilerSfc.parse(vueContent);
+        console.log(compileContent);
         if (!query.type) {
-            console.log(compileContent);
+            
             let compilerScript = compileContent.descriptor.script.content;
             const scriptContent = compilerScript.replace('export default', 'const __script=')
             ctx.type = 'text/javascript';
